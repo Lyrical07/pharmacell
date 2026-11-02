@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PharmaCell | Your Pharmacy Knowledge Hub</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --navy: #102b3f;
+    --teal: #13a89e;
+    --light: #f5f8fa;
+    --text: #263b4b;
+    --muted: #82909b;
+    --white: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--light);
+    color: var(--text);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+nav {
+    height: 76px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8%;
+    border-bottom: 1px solid #edf0f2;
+}
+
+.logo {
+    font-family: 'Manrope', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -1px;
+}
+
+.logo span {
+    color: var(--teal);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #536471;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.nav-links a:hover {
+    color: var(--teal);
+}
+
+.login-btn {
+    background: var(--navy);
+    color: white !important;
+    padding: 11px 23px;
+    border-radius: 9px;
+}
+
+.hero {
+    padding: 90px 8% 80px;
+    background: linear-gradient(120deg, #edf8f7, #f5f8fa 65%, #eaf2f7);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 50px;
+}
+
+.hero-content {
+    max-width: 610px;
+}
+
+.tag {
+    display: inline-block;
+    background: #dff5f1;
+    color: #128b83;
+    padding: 8px 14px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 24px;
+}
+
+.hero h1 {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(40px, 5vw, 61px);
+    line-height: 1.15;
+    color: var(--navy);
+    letter-spacing: -2px;
+    margin-bottom: 22px;
+}
+
+.hero h1 span {
+    color: var(--teal);
+}
+
+.hero p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #687985;
+    max-width: 510px;
+    margin-bottom: 30px;
+}
+
+.primary-btn {
+    display: inline-block;
+    background: var(--teal);
+    color: white;
+    text-decoration: none;
+    padding: 15px 25px;
+    border-radius: 9px;
+    font-weight: 700;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.primary-btn:hover {
+    background: #108c84;
+    transform: translateY(-2px);
+}
+
+.hero-visual {
+    width: 340px;
+    height: 340px;
+    min-width: 280px;
+    border-radius: 30px;
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    box-shadow: 0 25px 60px rgba(16,43,63,0.15);
+    position: relative;
+}
+
+.hero-visual .symbol {
+    font-size: 95px;
+    color: #36c8b8;
+    font-weight: 800;
+}
+
+.hero-visual h2 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 25px;
+    margin-top: 8px;
+}
+
+.hero-visual p {
+    color: #b6d0d8;
+    font-size: 13px;
+    margin: 8px 0 0;
+    text-align: center;
+}
+
+section {
+    padding: 75px 8%;
+}
+
+.section-heading {
+    text-align: center;
+    margin-bottom: 42px;
+}
+
+.section-heading h2 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 34px;
+    color: var(--navy);
+    margin-bottom: 10px;
+}
+
+.section-heading p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.semester-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.semester-card {
+    background: white;
+    padding: 25px;
+    border: 1px solid #edf0f2;
+    border-radius: 15px;
+    transition: 0.25s;
+}
+
+.semester-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(16,43,63,0.08);
+    border-color: #b8e7e1;
+}
+
+.sem-number {
+    font-size: 12px;
+    color: var(--teal);
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.semester-card h3 {
+    font-family: 'Manrope', sans-serif;
+    color: var(--navy);
+    font-size: 19px;
+    margin: 12px 0 8px;
+}
+
+.semester-card p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+}
+
+.semester-card a {
+    color: var(--teal);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.library {
+    background: white;
+}
+
+.search-box {
+    max-width: 550px;
+    margin: 0 auto 35px;
+    display: flex;
+    background: #f5f8fa;
+    border: 1px solid #e5eaed;
+    border-radius: 10px;
+    padding: 5px 15px;
+}
+
+.search-box input {
+    border: none;
+    background: transparent;
+    padding: 12px;
+    flex: 1;
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.note-card {
+    border: 1px solid #edf0f2;
+    border-radius: 14px;
+    padding: 24px;
+    transition: 0.2s;
+}
+
+.note-card:hover {
+    border-color: #b8e7e1;
+    transform: translateY(-3px);
+}
+
+.pdf-icon {
+    width: 45px;
+    height: 45px;
+    background: #e6f6f3;
+    color: var(--teal);
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.note-card h3 {
+    font-size: 17px;
+    color: var(--navy);
+    margin: 17px 0 8px;
+}
+
+.note-card p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 18px;
+}
+
+.preview-btn {
+    border: 1px solid #cce7e3;
+    background: white;
+    color: var(--teal);
+    padding: 9px 15px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.preview-btn:hover {
+    background: #e6f6f3;
+}
+
+.empty-message {
+    display: none;
+    text-align: center;
+    color: var(--muted);
+    padding: 25px;
+}
+
+.pricing {
+    background: #f0f7f7;
+}
+
+.price-card {
+    max-width: 420px;
+    margin: auto;
+    background: white;
+    border-radius: 18px;
+    padding: 38px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(16,43,63,0.06);
+}
+
+.price-card h3 {
+    color: var(--navy);
+    font-size: 21px;
+}
+
+.price {
+    font-family: 'Manrope', sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 15px 0 5px;
+}
+
+.price span {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+.price-card p {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 15px 0 25px;
+    line-height: 1.7;
+}
+
+.features {
+    list-style: none;
+    text-align: left;
+    margin-bottom: 28px;
+}
+
+.features li {
+    font-size: 14px;
+    padding: 9px 0;
+    color: #536471;
+}
+
+.features li::before {
+    content: "✓";
+    color: var(--teal);
+    font-weight: 800;
+    margin-right: 10px;
+}
+
+footer {
+    background: var(--navy);
+    padding: 40px 8%;
+    color: white;
+    text-align: center;
+}
+
+footer .logo {
+    color: white;
+    margin-bottom: 12px;
+}
+
+footer p {
+    color: #a8bdc8;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+footer .copyright {
+    margin-top: 25px;
+    font-size: 12px;
+    color: #819ba9;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(8,25,38,0.65);
+    z-index: 10;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.modal-box {
+    background: white;
+    max-width: 440px;
+    width: 100%;
+    padding: 30px;
+    border-radius: 16px;
+}
+
+.modal-box h3 {
+    color: var(--navy);
+    margin-bottom: 15px;
+}
+
+.modal-box p {
+    color: #687985;
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.close-btn {
+    margin-top: 20px;
+    border: none;
+    background: var(--navy);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+@media(max-width: 900px) {
+    .hero {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero p {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .semester-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .notes-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero-visual {
+        width: 280px;
+        height: 280px;
+    }
+}
+
+@media(max-width: 600px) {
+    nav {
+        padding: 0 5%;
+    }
+
+    .nav-links {
+        gap: 12px;
+    }
+
+    .nav-links a {
+        font-size: 11px;
+    }
+
+    .nav-links a:nth-child(1),
+    .nav-links a:nth-child(2) {
+        display: none;
+    }
+
+    section {
+        padding: 55px 5%;
+    }
+
+    .hero {
+        padding: 65px 5%;
+    }
+
+    .semester-grid,
+    .notes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-heading h2 {
+        font-size: 27px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">Pharma<span>Cell.</span></div>
+    <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#semesters">Semesters</a>
+        <a href="#library">Notes Library</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#pricing" class="login-btn">Get Started</a>
+    </div>
+</nav>
+
+<header class="hero" id="home">
+    <div class="hero-content">
+        <span class="tag">YOUR B.PHARM STUDY COMPANION</span>
+
+        <h1>Study smarter.<br>Build your <span>future.</span></h1>
+
+        <p>
+            Your pharmacy knowledge, organized in one place.
+            Explore semester-wise notes, study materials and
+            resources designed to make learning easier.
+        </p>
+
+        <a href="#semesters" class="primary-btn">Explore Notes →</a>
+    </div>
+
+    <div class="hero-visual">
+        <div class="symbol">P+</div>
+        <h2>PharmaCell</h2>
+        <p>Learn · Organize · Grow</p>
+    </div>
+</header>
+
+<section id="semesters">
+    <div class="section-heading">
+        <h2>Explore Semesters</h2>
+        <p>Everything organized according to your B.Pharm curriculum.</p>
+    </div>
+
+    <div class="semester-grid" id="semesterGrid"></div>
+</section>
+
+<section class="library" id="library">
+    <div class="section-heading">
+        <h2>Study Resources</h2>
+        <p>Find the material you need, without the unnecessary searching.</p>
+    </div>
+
+    <div class="search-box">
+        <span style="align-self:center">⌕</span>
+        <input type="text" id="searchInput"
+        placeholder="Search subjects, topics or notes...">
+    </div>
+
+    <div class="notes-grid" id="notesGrid"></div>
+
+    <p class="empty-message" id="emptyMessage">
+        No matching notes found. Try another search.
+    </p>
+</section>
+
+<section class="pricing" id="pricing">
+    <div class="section-heading">
+        <h2>Simple, Student-Friendly Pricing</h2>
+        <p>Access the study material you need at an affordable price.</p>
+    </div>
+
+    <div class="price-card">
+        <h3>PharmaCell Complete</h3>
+        <div class="price">₹300 <span>/ one-time</span></div>
+        <p>Unlock all eight B.Pharm semesters with a single purchase.</p>
+
+        <ul class="features">
+            <li>All 8 B.Pharm semesters</li>
+            <li>Subject-wise study materials</li>
+            <li>Online PDF reading</li>
+            <li>PDF downloads</li>
+            <li>Permanent access</li>
+        </ul>
+
+        <a href="#semesters" class="primary-btn">Explore Membership</a>
+
+        <p style="font-size:11px;margin-top:15px">
+            Individual semesters also available for ₹50 each.
+        </p>
+    </div>
+</section>
+
+<footer>
+    <div class="logo">Pharma<span>Cell.</span></div>
+    <p>Your Pharmacy Knowledge Hub.</p>
+    <p class="copyright">
+        © 2026 PharmaCell. All rights reserved.
+    </p>
+</footer>
+
+<div class="modal" id="previewModal">
+    <div class="modal-box">
+        <h3 id="modalTitle">Note Preview</h3>
+        <p id="modalText"></p>
+        <button class="close-btn" onclick="closePreview()">Close Preview</button>
+    </div>
+</div>
+
+<script>
+
+const semesters = [
+    "First Semester",
+    "Second Semester",
+    "Third Semester",
+    "Fourth Semester",
+    "Fifth Semester",
+    "Sixth Semester",
+    "Seventh Semester",
+    "Eighth Semester"
+];
+
+const semesterGrid = document.getElementById("semesterGrid");
+
+semesters.forEach((semester, index) => {
+    semesterGrid.innerHTML += `
+        <div class="semester-card">
+            <span class="sem-number">SEMESTER 0${index + 1}</span>
+            <h3>${semester}</h3>
+            <p>Bachelor of Pharmacy</p>
+            <a href="#library">Explore Resources →</a>
+        </div>
+    `;
+});
+
+const notes = [
+    {
+        title: "Human Anatomy & Physiology",
+        subject: "B.Pharm · Semester 1",
+        description: "Study material and organized chapter notes."
+    },
+    {
+        title: "Pharmaceutics",
+        subject: "B.Pharm · Semester 1",
+        description: "Fundamentals of dosage forms and pharmacy."
+    },
+    {
+        title: "Pharmaceutical Inorganic Chemistry",
+        subject: "B.Pharm · Semester 1",
+        description: "Important concepts and study material."
+    },
+    {
+        title: "Pharmacognosy",
+        subject: "B.Pharm · Semester 1",
+        description: "Study of natural drugs and their sources."
+    },
+    {
+        title: "Communication Skills",
+        subject: "B.Pharm · Semester 1",
+        description: "Organized learning material."
+    },
+    {
+        title: "Remedial Biology",
+        subject: "B.Pharm · Semester 1",
+        description: "Biological concepts and study resources."
+    }
+];
+
+const notesGrid = document.getElementById("notesGrid");
+
+function displayNotes(data) {
+    notesGrid.innerHTML = "";
+
+    data.forEach(note => {
+        notesGrid.innerHTML += `
+            <div class="note-card">
+                <div class="pdf-icon">PDF</div>
+                <h3>${note.title}</h3>
+                <p>${note.subject}</p>
+                <p>${note.description}</p>
+                <button class="preview-btn"
+                onclick="showPreview('${note.title.replace(/'/g, "\\'")}')">
+                Preview Note →
+                </button>
+            </div>
+        `;
+    });
+
+    document.getElementById("emptyMessage").style.display =
+        data.length ? "none" : "block";
+}
+
+displayNotes(notes);
+
+document.getElementById("searchInput").addEventListener("input", function() {
+    const query = this.value.toLowerCase();
+
+    const filtered = notes.filter(note =>
+        note.title.toLowerCase().includes(query) ||
+        note.subject.toLowerCase().includes(query) ||
+        note.description.toLowerCase().includes(query)
+    );
+
+    displayNotes(filtered);
+});
+
+function showPreview(title) {
+    document.getElementById("modalTitle").innerText = title;
+
+    document.getElementById("modalText").innerText =
+        "This is a sample preview of the " + title +
+        " study material. Actual PDF notes will appear here once uploaded to PharmaCell.";
+
+    document.getElementById("previewModal").style.display = "flex";
+}
+
+function closePreview() {
+    document.getElementById("previewModal").style.display = "none";
+}
+
+document.getElementById("previewModal").addEventListener("click", function(e) {
+    if(e.target === this) closePreview();
+});
+
+</script>
+
+</body>
+</html>
