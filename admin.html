@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PharmaCell Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--navy:#102b3f;--teal:#13a89e;--bg:#f4f7f8;--ink:#243746;--muted:#71808c;--line:#e5ebee;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font:15px Inter,system-ui,Arial;color:var(--ink)}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:9px;padding:10px 14px;background:var(--teal);color:white;font-weight:700}
+button.secondary{background:#e9f2f2;color:var(--navy)}button.danger{background:#fff0ef;color:#b8322a}
+input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:white;color:var(--ink)}
+label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}.muted{color:var(--muted)}.hidden{display:none!important}
+.top{background:var(--navy);color:white;padding:18px 5%;display:flex;align-items:center;justify-content:space-between}
+.brand{font-size:22px;font-weight:850;letter-spacing:-.5px}.brand span{color:#47d0c2}
+.wrap{max-width:1180px;margin:30px auto;padding:0 20px}.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 8px 25px #102b3f08}
+h1,h2,h3{margin:0 0 12px;color:var(--navy)}h1{font-size:27px}h2{font-size:19px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.row button{flex:0 0 auto}
+.item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}
+.item small{display:block;color:var(--muted);margin-top:3px}.actions{display:flex;gap:7px;flex-wrap:wrap}.actions button{padding:8px 10px;font-size:12px}
+.notice{padding:12px 14px;border-radius:10px;background:#edf8f7;color:#176b65;margin:12px 0}.error{background:#fff0ef;color:#a52b24}
+#login{max-width:430px;margin:8vh auto}.section-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.top{padding:16px 20px}.wrap{margin:18px auto}.panel{padding:17px}.item{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header class="top"><div class="brand">Pharma<span>Cell</span> <small style="font-size:12px;font-weight:500;color:#c5d8df"> / Admin</small></div><button id="logout" class="secondary hidden">Log out</button></header>
+
+<main id="login" class="panel">
+<h1>Admin sign in</h1><p class="muted">Sign in using the admin account you created in Supabase.</p>
+<div id="loginMsg" class="notice hidden"></div>
+<form id="loginForm">
+<label>Email</label><input id="email" type="email" required autocomplete="username">
+<label>Password</label><input id="password" type="password" required autocomplete="current-password">
+<div style="margin-top:16px"><button type="submit">Sign in</button></div>
+</form>
+</main>
+
+<main id="app" class="wrap hidden">
+<div class="section-head"><div><h1>Content management</h1><p class="muted">Manage semesters, subjects, units and study PDFs.</p></div><span id="who" class="muted"></span></div>
+<div id="appMsg" class="notice hidden"></div>
+<section class="panel">
+<div class="section-head"><h2>Semesters</h2><span class="muted">All 8 B.Pharm semesters</span></div>
+<div class="grid">
+<div><label>Semester number</label><select id="semNo"></select></div>
+<div><label>Semester display name</label><input id="semName" placeholder="e.g. Semester 1"></div>
+</div>
+<div class="row" style="margin-top:12px"><button id="saveSem">Save / update semester name</button></div>
+<div id="semesterList"></div>
+</section>
+
+<section class="panel">
+<h2>Subjects</h2>
+<label>Select semester</label><select id="subjectSemester"></select>
+<div class="grid">
+<div><label>Subject name</label><input id="subjectName" placeholder="Enter subject name"></div>
+<div><label>Description (optional)</label><input id="subjectDesc" placeholder="Short description"></div>
+</div>
+<div class="row" style="margin-top:12px"><button id="addSubject">Add subject</button></div>
+<div id="subjectList"></div>
+</section>
+
+<section class="panel">
+<h2>Units</h2>
+<label>Select subject</label><select id="unitSubject"></select>
+<div class="grid">
+<div><label>Unit name</label><input id="unitName" placeholder="e.g. Unit 1 - Introduction"></div>
+<div><label>Description (optional)</label><input id="unitDesc" placeholder="Short description"></div>
+</div>
+<div class="row" style="margin-top:12px"><button id="addUnit">Add unit</button></div>
+<div id="unitList"></div>
+</section>
+
+<section class="panel">
+<h2>PDF notes</h2>
+<p class="muted">Upload PDFs to the private notes bucket. Add a title and select the unit.</p>
+<label>Select unit</label><select id="noteUnit"></select>
+<div class="grid">
+<div><label>Note title</label><input id="noteTitle" placeholder="e.g. Unit 1 Complete Notes"></div>
+<div><label>Description (optional)</label><input id="noteDesc" placeholder="What does this PDF cover?"></div>
+</div>
+<label>PDF file</label><input id="noteFile" type="file" accept="application/pdf">
+<div class="row" style="margin-top:12px"><button id="uploadNote">Upload PDF</button></div>
+<div id="noteList"></div>
+</section>
+</main>
+
+<script>
+const SUPABASE_URL = "https://iwknouizpiivzsuhftxa.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_TMU111kqmrnqVSOLJi3Hkw__5hDJ96c";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const $ = id => document.getElementById(id);
+let semesters=[], subjects=[], units=[], notes=[];
+
+function message(target,text,error=false){const el=$(target);el.textContent=text;el.classList.remove("hidden","error");if(error)el.classList.add("error");}
+function clearMessage(target){$(target).classList.add("hidden");}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+async function requireAdmin(){
+ const {data:{session}}=await db.auth.getSession();
+ if(!session){showLogin();return false;}
+ const {data:profile,error}=await db.from("profiles").select("role,email").eq("id",session.user.id).single();
+ if(error||!profile||profile.role!=="admin"){await db.auth.signOut();showLogin();message("loginMsg","This account does not have admin access.",true);return false;}
+ $("login").classList.add("hidden");$("app").classList.remove("hidden");$("logout").classList.remove("hidden");$("who").textContent=profile.email||session.user.email;
+ await refreshAll();return true;
+}
+function showLogin(){$("app").classList.add("hidden");$("logout").classList.add("hidden");$("login").classList.remove("hidden");}
+$("loginForm").addEventListener("submit",async e=>{e.preventDefault();clearMessage("loginMsg");const {error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)message("loginMsg",error.message,true);else await requireAdmin();});
+$("logout").onclick=async()=>{await db.auth.signOut();showLogin();};
+
+async function refreshAll(){
+ let r=await db.from("semesters").select("*").order("semester_number");if(r.error)return message("appMsg",r.error.message,true);semesters=r.data;
+ r=await db.from("subjects").select("*").order("name");if(r.error)return message("appMsg",r.error.message,true);subjects=r.data;
+ r=await db.from("units").select("*").order("position");if(r.error)return message("appMsg",r.error.message,true);units=r.data;
+ r=await db.from("notes").select("*").order("created_at",{ascending:false});if(r.error)return message("appMsg",r.error.message,true);notes=r.data;
+ render();
+}
+function render(){
+ $("semNo").innerHTML=Array.from({length:8},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join("");
+ $("semesterList").innerHTML=semesters.map(s=>`<div class="item"><div><b>${esc(s.name)}</b><small>Semester ${s.semester_number}</small></div><div class="actions"><button class="secondary" onclick="editSemester(${s.id})">Edit name</button></div></div>`).join("")||'<p class="muted">No semesters found.</p>';
+ const semOptions=semesters.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join("");
+ $("subjectSemester").innerHTML=semOptions;
+ renderSubjects();renderUnits();renderNotes();
+}
+function renderSubjects(){
+ const sid=Number($("subjectSemester").value||semesters[0]?.id);
+ const list=subjects.filter(x=>x.semester_id===sid);
+ $("subjectList").innerHTML=list.map(s=>`<div class="item"><div><b>${esc(s.name)}</b><small>${esc(s.description||"No description")}</small></div><div class="actions"><button class="secondary" onclick="editSubject(${s.id})">Rename</button><button class="danger" onclick="deleteSubject(${s.id})">Delete</button></div></div>`).join("")||'<p class="muted">No subjects in this semester yet.</p>';
+ const opts=subjects.map(s=>`<option value="${s.id}">${esc(s.name)} — ${esc(semesters.find(x=>x.id===s.semester_id)?.name||"")}</option>`).join("");
+ $("unitSubject").innerHTML=opts;$("noteUnit").innerHTML=units.map(u=>`<option value="${u.id}">${esc(subjects.find(s=>s.id===u.subject_id)?.name||"Subject")} / ${esc(u.name)}</option>`).join("");
+}
+function renderUnits(){
+ const sid=Number($("unitSubject").value||subjects[0]?.id);const list=units.filter(u=>u.subject_id===sid);
+ $("unitList").innerHTML=list.map(u=>`<div class="item"><div><b>${esc(u.name)}</b><small>${esc(u.description||"No description")}</small></div><div class="actions"><button class="secondary" onclick="editUnit(${u.id})">Rename</button><button class="danger" onclick="deleteUnit(${u.id})">Delete</button></div></div>`).join("")||'<p class="muted">No units for this subject yet.</p>';
+}
+function renderNotes(){
+ $("noteList").innerHTML=notes.map(n=>{const u=units.find(x=>x.id===n.unit_id);const s=subjects.find(x=>x.id===u?.subject_id);return `<div class="item"><div><b>${esc(n.title)}</b><small>${esc(s?.name||"")} / ${esc(u?.name||"")} · ${n.file_path?"PDF uploaded":"No PDF"}</small></div><div class="actions"><button class="secondary" onclick="replacePdf(${n.id})">Replace PDF</button><button class="danger" onclick="deleteNote(${n.id})">Delete</button></div></div>`;}).join("")||'<p class="muted">No PDFs uploaded yet.</p>';
+}
+$("subjectSemester").onchange=renderSubjects;$("unitSubject").onchange=renderUnits;
+$("saveSem").onclick=async()=>{const n=Number($("semNo").value),name=$("semName").value.trim()||`Semester ${n}`;const {error}=await db.from("semesters").update({name}).eq("semester_number",n);if(error)message("appMsg",error.message,true);else{message("appMsg","Semester name saved.");await refreshAll();}};
+window.editSemester=async id=>{const s=semesters.find(x=>x.id===id);const name=prompt("New semester name:",s.name);if(name?.trim()){const {error}=await db.from("semesters").update({name:name.trim()}).eq("id",id);if(error)message("appMsg",error.message,true);else await refreshAll();}};
+$("addSubject").onclick=async()=>{const name=$("subjectName").value.trim();if(!name)return message("appMsg","Enter a subject name.",true);const {error}=await db.from("subjects").insert({semester_id:Number($("subjectSemester").value),name,description:$("subjectDesc").value.trim()});if(error)message("appMsg",error.message,true);else{$("subjectName").value="";$("subjectDesc").value="";message("appMsg","Subject added.");await refreshAll();}};
+window.editSubject=async id=>{const s=subjects.find(x=>x.id===id);const name=prompt("New subject name:",s.name);if(name?.trim()){const {error}=await db.from("subjects").update({name:name.trim()}).eq("id",id);if(error)message("appMsg",error.message,true);else await refreshAll();}};
+window.deleteSubject=async id=>{const s=subjects.find(x=>x.id===id);if(!confirm(`Delete "${s.name}" and its units/notes?`))return;const {error}=await db.from("subjects").delete().eq("id",id);if(error)message("appMsg",error.message,true);else await refreshAll();};
+$("addUnit").onclick=async()=>{const name=$("unitName").value.trim();if(!name)return message("appMsg","Enter a unit name.",true);const {error}=await db.from("units").insert({subject_id:Number($("unitSubject").value),name,description:$("unitDesc").value.trim()});if(error)message("appMsg",error.message,true);else{$("unitName").value="";$("unitDesc").value="";message("appMsg","Unit added.");await refreshAll();}};
+window.editUnit=async id=>{const u=units.find(x=>x.id===id);const name=prompt("New unit name:",u.name);if(name?.trim()){const {error}=await db.from("units").update({name:name.trim()}).eq("id",id);if(error)message("appMsg",error.message,true);else await refreshAll();}};
+window.deleteUnit=async id=>{const u=units.find(x=>x.id===id);if(!confirm(`Delete "${u.name}" and its notes?`))return;const {error}=await db.from("units").delete().eq("id",id);if(error)message("appMsg",error.message,true);else await refreshAll();};
+
+async function uploadFile(file,path){
+ const {error}=await db.storage.from("notes-pdfs").upload(path,file,{upsert:true,contentType:"application/pdf"});
+ if(error)throw error;return path;
+}
+$("uploadNote").onclick=async()=>{
+ try{
+  const unitId=Number($("noteUnit").value),title=$("noteTitle").value.trim(),file=$("noteFile").files[0];
+  if(!unitId||!title||!file)throw new Error("Select a unit, enter a title and choose a PDF.");
+  if(file.type!=="application/pdf")throw new Error("Please select a PDF file.");
+  const path=`${unitId}/${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;
+  await uploadFile(file,path);
+  const {error}=await db.from("notes").insert({unit_id:unitId,title,description:$("noteDesc").value.trim(),file_path:path,is_published:false});
+  if(error){await db.storage.from("notes-pdfs").remove([path]);throw error;}
+  $("noteTitle").value="";$("noteDesc").value="";$("noteFile").value="";message("appMsg","PDF uploaded. It is saved as unpublished until student access is implemented.");await refreshAll();
+ }catch(e){message("appMsg",e.message||"Upload failed.",true);}
+};
+window.replacePdf=async id=>{
+ const file=document.createElement("input");file.type="file";file.accept="application/pdf";file.onchange=async()=>{
+  const f=file.files[0];if(!f)return;if(f.type!=="application/pdf")return message("appMsg","Choose a PDF file.",true);
+  try{const n=notes.find(x=>x.id===id);const path=`${n.unit_id}/${crypto.randomUUID()}-${f.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;await uploadFile(f,path);const {error}=await db.from("notes").update({file_path:path}).eq("id",id);if(error){await db.storage.from("notes-pdfs").remove([path]);throw error;}if(n.file_path)await db.storage.from("notes-pdfs").remove([n.file_path]);message("appMsg","PDF replaced.");await refreshAll();}catch(e){message("appMsg",e.message,true);}
+ };file.click();
+};
+window.deleteNote=async id=>{const n=notes.find(x=>x.id===id);if(!confirm(`Delete "${n.title}" and its PDF?`))return;const {error}=await db.from("notes").delete().eq("id",id);if(error)return message("appMsg",error.message,true);if(n.file_path)await db.storage.from("notes-pdfs").remove([n.file_path]);message("appMsg","Note deleted.");await refreshAll();};
+db.auth.onAuthStateChange((_event,session)=>{if(!session)showLogin();});
+requireAdmin();
+</script>
+</body>
+</html>
